@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 11:22:09 by cobli             #+#    #+#             */
-/*   Updated: 2025/03/30 17:02:10 by cobli            ###   ########.fr       */
+/*   Updated: 2025/03/30 17:44:32 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,53 +20,32 @@
 
 #include "ft_ls.h"
 
+static void get_link_information(t_entry *entry, const char *path);
+static void get_user_and_group_information(t_entry *entry, const struct stat file_stat);
+static void get_time_information(t_entry *entry, const struct stat file_stat);
 static void get_permissions(mode_t mode, char *perm);
 static void concat_paths(char *dest, const char *path, const char *filename);
 
 t_entry *create_entry(const char *path, struct dirent *dirent) {
   struct stat file_stat;
   char full_path[PATH_MAX];
+
   concat_paths(full_path, path, dirent->d_name);
-
   if (lstat(full_path, &file_stat) < 0) return NULL;
-
   t_entry *entry = malloc(sizeof(t_entry));
   if (!entry) return NULL;
   ft_memset(entry, 0, sizeof(t_entry));
 
   entry->name = ft_strdup(dirent->d_name);
-  get_permissions(file_stat.st_mode, entry->permissions);
-
-  struct passwd *pw = getpwuid(file_stat.st_uid);
-  struct group *gr = getgrgid(file_stat.st_gid);
-  entry->owner = ft_strdup(pw ? pw->pw_name : "?");
-  entry->group = ft_strdup(gr ? gr->gr_name : "?");
-
+  entry->nlink = file_stat.st_nlink;
   entry->size = file_stat.st_size;
   entry->blocks = file_stat.st_blocks;
 
-  char *time_str = ctime(&file_stat.st_mtime);
-  if (time_str) {
-    time_str[16] = '\0';
-    entry->s_time = ft_strdup(time_str + 4);
-  } else {
-    entry->s_time = ft_strdup("?");
-  }
-  entry->time_sec = file_stat.st_mtim.tv_sec;
-  entry->time_nsec = file_stat.st_mtim.tv_nsec;
-
-  entry->nlink = file_stat.st_nlink;
+  get_permissions(file_stat.st_mode, entry->permissions);
+  get_user_and_group_information(entry, file_stat);
+  get_time_information(entry, file_stat);
   if (S_ISLNK(file_stat.st_mode)) {
-    char link_target[PATH_MAX];
-    ssize_t len = readlink(full_path, link_target, sizeof(link_target) - 1);
-    if (len != -1) {
-      link_target[len] = '\0';
-      entry->link = ft_strdup(link_target);
-    } else {
-      entry->link = ft_strdup("?");
-    }
-  } else {
-    entry->link = NULL;
+    get_link_information(entry, full_path);
   }
 
   return entry;
@@ -81,6 +60,36 @@ void free_entry(void *entry) {
     if (((t_entry *)entry)->link) free(((t_entry *)entry)->link);
     free(entry);
   }
+}
+
+static void get_link_information(t_entry *entry, const char *path) {
+  char link_target[PATH_MAX];
+  ssize_t len = readlink(path, link_target, sizeof(link_target) - 1);
+  if (len != -1) {
+    link_target[len] = '\0';
+    entry->link = ft_strdup(link_target);
+  } else {
+    entry->link = ft_strdup("?");
+  }
+}
+
+static void get_user_and_group_information(t_entry *entry, const struct stat file_stat) {
+  struct passwd *pw = getpwuid(file_stat.st_uid);
+  struct group *gr = getgrgid(file_stat.st_gid);
+  entry->owner = ft_strdup(pw ? pw->pw_name : "?");
+  entry->group = ft_strdup(gr ? gr->gr_name : "?");
+}
+
+static void get_time_information(t_entry *entry, const struct stat file_stat) {
+  char *time_str = ctime(&file_stat.st_mtime);
+  if (time_str) {
+    time_str[16] = '\0';
+    entry->s_time = ft_strdup(time_str + 4);
+  } else {
+    entry->s_time = ft_strdup("?");
+  }
+  entry->time_sec = file_stat.st_mtim.tv_sec;
+  entry->time_nsec = file_stat.st_mtim.tv_nsec;
 }
 
 static void concat_paths(char *dest, const char *path, const char *filename) {

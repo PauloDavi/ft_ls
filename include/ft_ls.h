@@ -38,7 +38,9 @@ typedef struct s_tabulation {
 
 bool list_directory(const char *path, const t_flags *flags);
 t_entry *create_entry(const char *path, struct dirent *dirent);
+void order_files(t_list *list, const t_flags *flags);
 void free_entry(void *entry);
+void print_files(t_list *list, const t_flags *flags);
 t_tabulation find_max_tabulations(t_list *list);
 
 #endif
