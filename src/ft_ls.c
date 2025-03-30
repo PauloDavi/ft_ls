@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 09:37:15 by cobli             #+#    #+#             */
-/*   Updated: 2025/03/30 10:00:02 by cobli            ###   ########.fr       */
+/*   Updated: 2025/03/30 15:32:51 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,14 @@
 int main(void) {
   t_flags flags;
 
-  flags.all = false;
-  list_directory(".", flags);
+  flags.all = true;
+  flags.list = true;
+  flags.reverse = true;
+  flags.time = true;
+  flags.recursive = false;
+  if (!list_directory(".", &flags)) {
+    return (EXIT_FAILURE);
+  }
 
-  return (0);
+  return (EXIT_SUCCESS);
 }

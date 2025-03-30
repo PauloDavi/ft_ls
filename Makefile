@@ -13,7 +13,7 @@ OBJ_DIR := build
 INCLUDE_DIR := include
 INCLUDES := -I$(INCLUDE_DIR) -I$(LIBFT_DIR)
 
-SRCS := ft_ls.c list_directory.c
+SRCS := ft_ls.c list_directory.c file_entry.c
 OBJS := $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
 
 all: $(LIBFT) $(NAME)
@@ -43,4 +43,10 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+run: all
+	./$(NAME)
+
+val: all
+	@valgrind -q --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) $(ARGS)
+
+.PHONY: all clean fclean re run val
