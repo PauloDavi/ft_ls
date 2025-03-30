@@ -1,0 +1,64 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Depurar ft_ls",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/ft_ls",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Ativar impressão de variáveis",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "preLaunchTask": "Compilar"
+    },
+    {
+      "name": "Depurar ft_ls",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "/home/cobli/Documentos/pessoal/42sp-ft-ls/ft_ls",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "/home/cobli/Documentos/pessoal/42sp-ft-ls",
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "setupCommands": [
+        {
+          "description": "Ativar impressão de variáveis",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "preLaunchTask": "Compilar"
+    },
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "externalConsole": false,
+      "cwd": "/home/cobli/Documentos/pessoal/42sp-ft-ls/src",
+      "program": "/home/cobli/Documentos/pessoal/42sp-ft-ls/src/build/Debug/outDebug",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
+}

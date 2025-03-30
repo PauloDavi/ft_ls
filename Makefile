@@ -13,7 +13,7 @@ OBJ_DIR := build
 INCLUDE_DIR := include
 INCLUDES := -I$(INCLUDE_DIR) -I$(LIBFT_DIR)
 
-SRCS := ft_ls.c
+SRCS := ft_ls.c list_directory.c
 OBJS := $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
 
 all: $(LIBFT) $(NAME)
