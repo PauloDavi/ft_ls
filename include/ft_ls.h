@@ -29,8 +29,16 @@ typedef struct s_entry {
   char *link;
 } t_entry;
 
+typedef struct s_tabulation {
+  size_t max_nlink;
+  size_t max_owner;
+  size_t max_group;
+  size_t max_size;
+} t_tabulation;
+
 bool list_directory(const char *path, const t_flags *flags);
 t_entry *create_entry(const char *path, struct dirent *dirent);
 void free_entry(void *entry);
+t_tabulation find_max_tabulations(t_list *list);
 
 #endif

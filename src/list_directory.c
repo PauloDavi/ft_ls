@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 09:37:12 by cobli             #+#    #+#             */
-/*   Updated: 2025/03/30 16:21:25 by cobli            ###   ########.fr       */
+/*   Updated: 2025/03/30 16:57:07 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,9 @@ static int default_order(void *a, void *b);
 static int time_order(void *a, void *b);
 static bool add_entry(const char *path, struct dirent *entry, t_list **list);
 static void print_entry_name(void *content);
-static void print_entry(void *content);
+static void print_entry(t_entry *entry, t_tabulation tab);
 static void print_total_blocks(t_list *list);
+void print_entries(t_list *lst, t_tabulation tab);
 static void print_files(t_list *list, const t_flags *flags);
 
 bool list_directory(const char *path, const t_flags *flags) {
@@ -63,7 +64,8 @@ static void print_files(t_list *list, const t_flags *flags) {
 
   if (flags->list) {
     print_total_blocks(list);
-    ft_lstiter(list, print_entry);
+    t_tabulation tab = find_max_tabulations(list);
+    print_entries(list, tab);
   } else {
     ft_lstiter(list, print_entry_name);
   }
@@ -128,14 +130,23 @@ static void print_entry_name(void *content) {
   ft_printf("%s\n", entry->name);
 }
 
-static void print_entry(void *content) {
-  t_entry *entry = (t_entry *)content;
-  ft_printf("%s %*ld %s %s %6ld %s %s",
+void print_entries(t_list *lst, t_tabulation tab) {
+  while (lst != NULL) {
+    print_entry(lst->content, tab);
+    lst = lst->next;
+  }
+}
+
+static void print_entry(t_entry *entry, t_tabulation tab) {
+  ft_printf("%s %*ld %*s %*s %*ld %s %s",
             entry->permissions,
-            2,
+            tab.max_nlink,
             entry->nlink,
+            tab.max_owner,
             entry->owner,
+            tab.max_group,
             entry->group,
+            tab.max_size,
             entry->size,
             entry->s_time,
             entry->name);
