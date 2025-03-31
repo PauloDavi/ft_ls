@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 17:04:59 by cobli             #+#    #+#             */
-/*   Updated: 2025/03/30 17:08:36 by cobli            ###   ########.fr       */
+/*   Updated: 2025/03/30 23:46:08 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,17 @@ static void print_entry_name(void *content);
 static void print_entry(t_entry *entry, t_tabulation tab);
 static void print_total_blocks(t_list *list);
 void print_entries(t_list *lst, t_tabulation tab);
+static void print_files(t_list *list, const t_flags *flags, bool is_files);
 
-void print_files(t_list *list, const t_flags *flags) {
+void display_list(t_list *list, const t_flags *flags, bool is_files) {
+  order_files(list, flags);
+  print_files(list, flags, is_files);
+  ft_lstclear(&list, free_entry);
+}
+
+static void print_files(t_list *list, const t_flags *flags, bool is_files) {
   if (flags->list) {
-    print_total_blocks(list);
+    if (!is_files) print_total_blocks(list);
     t_tabulation tab = find_max_tabulations(list);
     print_entries(list, tab);
   } else {

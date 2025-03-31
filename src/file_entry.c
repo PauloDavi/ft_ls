@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 11:22:09 by cobli             #+#    #+#             */
-/*   Updated: 2025/03/30 17:44:32 by cobli            ###   ########.fr       */
+/*   Updated: 2025/03/30 23:51:38 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <grp.h>
 #include <linux/limits.h>
 #include <pwd.h>
+#include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <time.h>
@@ -26,17 +27,21 @@ static void get_time_information(t_entry *entry, const struct stat file_stat);
 static void get_permissions(mode_t mode, char *perm);
 static void concat_paths(char *dest, const char *path, const char *filename);
 
-t_entry *create_entry(const char *path, struct dirent *dirent) {
+t_entry *create_entry(const char *path, const char *filename) {
   struct stat file_stat;
   char full_path[PATH_MAX];
 
-  concat_paths(full_path, path, dirent->d_name);
+  if (path == NULL) {
+    ft_memcpy(full_path, filename, ft_strlen(filename) + 1);
+  } else {
+    concat_paths(full_path, path, filename);
+  }
   if (lstat(full_path, &file_stat) < 0) return NULL;
   t_entry *entry = malloc(sizeof(t_entry));
   if (!entry) return NULL;
   ft_memset(entry, 0, sizeof(t_entry));
 
-  entry->name = ft_strdup(dirent->d_name);
+  entry->name = ft_strdup(filename);
   entry->nlink = file_stat.st_nlink;
   entry->size = file_stat.st_size;
   entry->blocks = file_stat.st_blocks;
@@ -49,6 +54,31 @@ t_entry *create_entry(const char *path, struct dirent *dirent) {
   }
 
   return entry;
+}
+
+bool add_entry(const char *path, const char *filename, t_list **list) {
+  t_entry *entry = create_entry(path, filename);
+  if (entry == NULL) {
+    perror("malloc");
+    ft_lstclear(list, free_entry);
+    return false;
+  }
+
+  t_list *new_node = ft_lstnew(entry);
+  if (new_node == NULL) {
+    perror("malloc");
+    free_entry(entry);
+    ft_lstclear(list, free_entry);
+    return false;
+  }
+
+  if (list == NULL) {
+    *list = new_node;
+  } else {
+    ft_lstadd_back(list, new_node);
+  }
+
+  return true;
 }
 
 void free_entry(void *entry) {

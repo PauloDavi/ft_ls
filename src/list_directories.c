@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   list_directory.c                                   :+:      :+:    :+:   */
+/*   list_directories.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 09:37:12 by cobli             #+#    #+#             */
-/*   Updated: 2025/03/30 17:36:28 by cobli            ###   ########.fr       */
+/*   Updated: 2025/03/31 00:11:35 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,24 @@
 
 #include "ft_ls.h"
 
-static bool add_entry(const char *path, struct dirent *entry, t_list **list);
+static bool list_directory(const char *path, const t_flags *flags);
 
-bool list_directory(const char *path, const t_flags *flags) {
+bool list_directories(t_list *list, const t_flags *flags, bool has_files_before) {
+  bool show_dir_name = has_files_before || ft_lstsize(list) > 1;
+  t_list *current = list;
+  while (current != NULL) {
+    if (show_dir_name) {
+      ft_printf("\n%s:\n", current->content);
+    }
+    if (!list_directory(current->content, flags)) {
+      return false;
+    }
+    current = current->next;
+  }
+  return true;
+}
+
+static bool list_directory(const char *path, const t_flags *flags) {
   DIR *dir;
   struct dirent *entry;
 
@@ -32,40 +47,13 @@ bool list_directory(const char *path, const t_flags *flags) {
     if (entry->d_name[0] == '.' && !flags->all) {
       continue;
     }
-    if (!add_entry(path, entry, &list)) {
+    if (!add_entry(path, entry->d_name, &list)) {
       closedir(dir);
       return false;
     }
   }
   closedir(dir);
 
-  order_files(list, flags);
-  print_files(list, flags);
-  ft_lstclear(&list, free_entry);
-  return true;
-}
-
-static bool add_entry(const char *path, struct dirent *dirent, t_list **list) {
-  t_entry *entry = create_entry(path, dirent);
-  if (entry == NULL) {
-    perror("malloc");
-    ft_lstclear(list, free_entry);
-    return false;
-  }
-
-  t_list *new_node = ft_lstnew(entry);
-  if (new_node == NULL) {
-    perror("malloc");
-    free_entry(entry);
-    ft_lstclear(list, free_entry);
-    return false;
-  }
-
-  if (list == NULL) {
-    *list = new_node;
-  } else {
-    ft_lstadd_back(list, new_node);
-  }
-
+  display_list(list, flags, false);
   return true;
 }

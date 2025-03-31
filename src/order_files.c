@@ -6,20 +6,20 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 17:08:50 by cobli             #+#    #+#             */
-/*   Updated: 2025/03/30 17:10:40 by cobli            ###   ########.fr       */
+/*   Updated: 2025/03/30 23:25:48 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-static int default_order(void *a, void *b);
+static int alphabetical_order(void *a, void *b);
 static int time_order(void *a, void *b);
 
 void order_files(t_list *list, const t_flags *flags) {
   if (flags->time) {
     ft_lst_sort(list, time_order);
   } else {
-    ft_lst_sort(list, default_order);
+    ft_lst_sort(list, alphabetical_order);
   }
 
   if (flags->reverse) {
@@ -27,7 +27,7 @@ void order_files(t_list *list, const t_flags *flags) {
   }
 }
 
-static int default_order(void *a, void *b) {
+static int alphabetical_order(void *a, void *b) {
   t_entry *entry_a = (t_entry *)a;
   t_entry *entry_b = (t_entry *)b;
 

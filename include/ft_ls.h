@@ -36,11 +36,14 @@ typedef struct s_tabulation {
   size_t max_size;
 } t_tabulation;
 
-bool list_directory(const char *path, const t_flags *flags);
-t_entry *create_entry(const char *path, struct dirent *dirent);
+bool list_directories(t_list *list, const t_flags *flags, bool has_files_before);
+bool add_entry(const char *path, const char *filename, t_list **list);
 void order_files(t_list *list, const t_flags *flags);
+bool list_files(t_list *files, const t_flags *flags);
+bool parse_flags(t_flags *flags, int argc, char **argv);
+bool parse_args(t_list **files, t_list **directories, int argc, char **argv);
 void free_entry(void *entry);
-void print_files(t_list *list, const t_flags *flags);
+void display_list(t_list *list, const t_flags *flags, bool is_files);
 t_tabulation find_max_tabulations(t_list *list);
 
 #endif
