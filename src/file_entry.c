@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 11:22:09 by cobli             #+#    #+#             */
-/*   Updated: 2025/03/30 23:51:38 by cobli            ###   ########.fr       */
+/*   Updated: 2025/04/01 21:03:34 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,10 @@
 #include "ft_ls.h"
 
 static void get_link_information(t_entry *entry, const char *path);
-static void get_user_and_group_information(t_entry *entry, const struct stat file_stat);
-static void get_time_information(t_entry *entry, const struct stat file_stat);
+static void get_user_and_group_information(t_entry *entry, const struct stat *file_stat);
+static void get_time_information(t_entry *entry, const struct stat *file_stat);
 static void get_permissions(mode_t mode, char *perm);
-static void concat_paths(char *dest, const char *path, const char *filename);
+static t_entry *init_entry(struct stat *file_stat, const char *filename, const char *full_path);
 
 t_entry *create_entry(const char *path, const char *filename) {
   struct stat file_stat;
@@ -36,24 +36,13 @@ t_entry *create_entry(const char *path, const char *filename) {
   } else {
     concat_paths(full_path, path, filename);
   }
-  if (lstat(full_path, &file_stat) < 0) return NULL;
-  t_entry *entry = malloc(sizeof(t_entry));
-  if (!entry) return NULL;
-  ft_memset(entry, 0, sizeof(t_entry));
 
-  entry->name = ft_strdup(filename);
-  entry->nlink = file_stat.st_nlink;
-  entry->size = file_stat.st_size;
-  entry->blocks = file_stat.st_blocks;
-
-  get_permissions(file_stat.st_mode, entry->permissions);
-  get_user_and_group_information(entry, file_stat);
-  get_time_information(entry, file_stat);
-  if (S_ISLNK(file_stat.st_mode)) {
-    get_link_information(entry, full_path);
+  if (lstat(full_path, &file_stat) < 0) {
+    perror("lstat");
+    return (NULL);
   }
 
-  return entry;
+  return (init_entry(&file_stat, filename, full_path));
 }
 
 bool add_entry(const char *path, const char *filename, t_list **list) {
@@ -61,7 +50,7 @@ bool add_entry(const char *path, const char *filename, t_list **list) {
   if (entry == NULL) {
     perror("malloc");
     ft_lstclear(list, free_entry);
-    return false;
+    return (false);
   }
 
   t_list *new_node = ft_lstnew(entry);
@@ -69,16 +58,11 @@ bool add_entry(const char *path, const char *filename, t_list **list) {
     perror("malloc");
     free_entry(entry);
     ft_lstclear(list, free_entry);
-    return false;
+    return (false);
   }
 
-  if (list == NULL) {
-    *list = new_node;
-  } else {
-    ft_lstadd_back(list, new_node);
-  }
-
-  return true;
+  ft_lstadd_front(list, new_node);
+  return (true);
 }
 
 void free_entry(void *entry) {
@@ -92,6 +76,34 @@ void free_entry(void *entry) {
   }
 }
 
+static t_entry *init_entry(struct stat *file_stat, const char *filename, const char *full_path) {
+  t_entry *entry = malloc(sizeof(t_entry));
+  if (!entry) {
+    perror("malloc");
+    return (NULL);
+  }
+  ft_memset(entry, 0, sizeof(t_entry));
+
+  entry->name = ft_strdup(filename);
+  if (!entry->name) {
+    perror("malloc");
+    free(entry);
+    return (NULL);
+  }
+  entry->nlink = file_stat->st_nlink;
+  entry->size = file_stat->st_size;
+  entry->blocks = file_stat->st_blocks;
+
+  get_permissions(file_stat->st_mode, entry->permissions);
+  get_user_and_group_information(entry, file_stat);
+  get_time_information(entry, file_stat);
+  if (S_ISLNK(file_stat->st_mode)) {
+    get_link_information(entry, full_path);
+  }
+
+  return (entry);
+}
+
 static void get_link_information(t_entry *entry, const char *path) {
   char link_target[PATH_MAX];
   ssize_t len = readlink(path, link_target, sizeof(link_target) - 1);
@@ -103,40 +115,23 @@ static void get_link_information(t_entry *entry, const char *path) {
   }
 }
 
-static void get_user_and_group_information(t_entry *entry, const struct stat file_stat) {
-  struct passwd *pw = getpwuid(file_stat.st_uid);
-  struct group *gr = getgrgid(file_stat.st_gid);
+static void get_user_and_group_information(t_entry *entry, const struct stat *file_stat) {
+  struct passwd *pw = getpwuid(file_stat->st_uid);
+  struct group *gr = getgrgid(file_stat->st_gid);
   entry->owner = ft_strdup(pw ? pw->pw_name : "?");
   entry->group = ft_strdup(gr ? gr->gr_name : "?");
 }
 
-static void get_time_information(t_entry *entry, const struct stat file_stat) {
-  char *time_str = ctime(&file_stat.st_mtime);
+static void get_time_information(t_entry *entry, const struct stat *file_stat) {
+  char *time_str = ctime(&file_stat->st_mtime);
   if (time_str) {
     time_str[16] = '\0';
     entry->s_time = ft_strdup(time_str + 4);
   } else {
     entry->s_time = ft_strdup("?");
   }
-  entry->time_sec = file_stat.st_mtim.tv_sec;
-  entry->time_nsec = file_stat.st_mtim.tv_nsec;
-}
-
-static void concat_paths(char *dest, const char *path, const char *filename) {
-  size_t path_len = ft_strlen(path);
-  size_t filename_len = ft_strlen(filename);
-
-  if (path_len + filename_len + 2 > PATH_MAX) {
-    return;
-  }
-
-  ft_memcpy(dest, path, path_len);
-  if (path[path_len - 1] != '/') {
-    dest[path_len] = '/';
-    path_len++;
-  }
-  ft_memcpy(dest + path_len, filename, filename_len);
-  dest[path_len + filename_len] = '\0';
+  entry->time_sec = file_stat->st_mtim.tv_sec;
+  entry->time_nsec = file_stat->st_mtim.tv_nsec;
 }
 
 static void get_permissions(mode_t mode, char *perm) {

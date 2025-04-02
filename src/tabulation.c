@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 16:25:57 by cobli             #+#    #+#             */
-/*   Updated: 2025/03/30 16:36:22 by cobli            ###   ########.fr       */
+/*   Updated: 2025/04/01 20:26:33 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ t_tabulation find_max_tabulations(t_list *list) {
     current = current->next;
   }
 
-  return tab;
+  return (tab);
 }
 
 static void calc_tabulation(t_tabulation *tab, t_entry *entry) {

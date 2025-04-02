@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 17:08:50 by cobli             #+#    #+#             */
-/*   Updated: 2025/03/30 23:25:48 by cobli            ###   ########.fr       */
+/*   Updated: 2025/04/01 20:26:33 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ static int alphabetical_order(void *a, void *b) {
   t_entry *entry_a = (t_entry *)a;
   t_entry *entry_b = (t_entry *)b;
 
-  return ft_strcmp(entry_a->name, entry_b->name);
+  return (ft_strcmp(entry_a->name, entry_b->name));
 }
 
 static int time_order(void *a, void *b) {

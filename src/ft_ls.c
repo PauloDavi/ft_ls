@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 09:37:15 by cobli             #+#    #+#             */
-/*   Updated: 2025/03/31 00:04:41 by cobli            ###   ########.fr       */
+/*   Updated: 2025/04/01 20:39:31 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,18 +25,17 @@ int main(int argc, char **argv) {
     return (EXIT_FAILURE);
   }
 
-  if (files != NULL && !list_files(files, &flags)) {
-    ft_lstclear(&files, free);
-    ft_lstclear(&directories, free);
-    return (EXIT_FAILURE);
-  }
-  if (directories != NULL && !list_directories(directories, &flags, files != NULL)) {
-    ft_lstclear(&files, free);
-    ft_lstclear(&directories, free);
-    return (EXIT_FAILURE);
+  bool has_files = files != NULL;
+  if (has_files) {
+    display_list(files, &flags, true);
+    ft_lstclear(&files, free_entry);
   }
 
-  ft_lstclear(&files, free);
-  ft_lstclear(&directories, free);
-  return (EXIT_SUCCESS);
+  int exit_code = EXIT_SUCCESS;
+  if (directories != NULL && !list_directories(directories, &flags, has_files)) {
+    exit_code = EXIT_FAILURE;
+  }
+
+  ft_lstclear(&directories, free_entry);
+  return (exit_code);
 }

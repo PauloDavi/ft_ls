@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 17:45:09 by cobli             #+#    #+#             */
-/*   Updated: 2025/03/30 23:24:09 by cobli            ###   ########.fr       */
+/*   Updated: 2025/03/31 09:39:53 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ static bool parse_flag(const char *arg, t_flags *flags) {
     else if (arg[i] == 't')
       flags->time = true;
     else if (arg[i] == 'R')
-      flags->reverse = true;
+      flags->recursive = true;
     else
       return (false);
   }

@@ -17,7 +17,8 @@
     "array": "c",
     "string_view": "c",
     "initializer_list": "c",
-    "utility": "c"
+    "utility": "c",
+    "functional": "c"
   },
   "editor.formatOnSave": true,
   "editor.tabSize": 2,

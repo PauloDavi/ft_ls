@@ -39,10 +39,11 @@ typedef struct s_tabulation {
 bool list_directories(t_list *list, const t_flags *flags, bool has_files_before);
 bool add_entry(const char *path, const char *filename, t_list **list);
 void order_files(t_list *list, const t_flags *flags);
-bool list_files(t_list *files, const t_flags *flags);
+t_entry *create_entry(const char *path, const char *filename);
 bool parse_flags(t_flags *flags, int argc, char **argv);
 bool parse_args(t_list **files, t_list **directories, int argc, char **argv);
 void free_entry(void *entry);
+void concat_paths(char *dest, const char *path, const char *filename);
 void display_list(t_list *list, const t_flags *flags, bool is_files);
 t_tabulation find_max_tabulations(t_list *list);
 

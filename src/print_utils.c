@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 17:04:59 by cobli             #+#    #+#             */
-/*   Updated: 2025/03/30 23:46:08 by cobli            ###   ########.fr       */
+/*   Updated: 2025/04/01 20:38:58 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ static void print_files(t_list *list, const t_flags *flags, bool is_files);
 void display_list(t_list *list, const t_flags *flags, bool is_files) {
   order_files(list, flags);
   print_files(list, flags, is_files);
-  ft_lstclear(&list, free_entry);
 }
 
 static void print_files(t_list *list, const t_flags *flags, bool is_files) {
