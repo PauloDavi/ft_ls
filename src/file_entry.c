@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 11:22:09 by cobli             #+#    #+#             */
-/*   Updated: 2025/04/01 21:03:34 by cobli            ###   ########.fr       */
+/*   Updated: 2025/04/01 22:47:34 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,7 @@ static t_entry *init_entry(struct stat *file_stat, const char *filename, const c
   entry->nlink = file_stat->st_nlink;
   entry->size = file_stat->st_size;
   entry->blocks = file_stat->st_blocks;
+  entry->is_executable = (file_stat->st_mode & S_IXUSR) || (file_stat->st_mode & S_IXGRP) || (file_stat->st_mode & S_IXOTH);
 
   get_permissions(file_stat->st_mode, entry->permissions);
   get_user_and_group_information(entry, file_stat);

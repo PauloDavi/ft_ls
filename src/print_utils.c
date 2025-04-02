@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 17:04:59 by cobli             #+#    #+#             */
-/*   Updated: 2025/04/01 20:38:58 by cobli            ###   ########.fr       */
+/*   Updated: 2025/04/01 22:51:11 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,12 @@ static void print_entry(t_entry *entry, t_tabulation tab);
 static void print_total_blocks(t_list *list);
 void print_entries(t_list *lst, t_tabulation tab);
 static void print_files(t_list *list, const t_flags *flags, bool is_files);
+static void print_name(char *name, char permission, bool is_executable);
 
 void display_list(t_list *list, const t_flags *flags, bool is_files) {
-  order_files(list, flags);
+  if (!flags->no_sort) {
+    order_files(list, flags);
+  }
   print_files(list, flags, is_files);
 }
 
@@ -47,7 +50,8 @@ static void print_total_blocks(t_list *list) {
 
 static void print_entry_name(void *content) {
   t_entry *entry = (t_entry *)content;
-  ft_printf("%s\n", entry->name);
+  print_name(entry->name, entry->permissions[0], entry->is_executable);
+  ft_printf("\n");
 }
 
 void print_entries(t_list *lst, t_tabulation tab) {
@@ -58,7 +62,7 @@ void print_entries(t_list *lst, t_tabulation tab) {
 }
 
 static void print_entry(t_entry *entry, t_tabulation tab) {
-  ft_printf("%s %*ld %*s %*s %*ld %s %s",
+  ft_printf("%s %*ld %*s %*s %*ld %s ",
             entry->permissions,
             tab.max_nlink,
             entry->nlink,
@@ -68,10 +72,22 @@ static void print_entry(t_entry *entry, t_tabulation tab) {
             entry->group,
             tab.max_size,
             entry->size,
-            entry->s_time,
-            entry->name);
+            entry->s_time);
+  print_name(entry->name, entry->permissions[0], entry->is_executable);
   if (entry->link) {
     ft_printf(" -> %s", entry->link);
   }
   ft_printf("\n");
+}
+
+static void print_name(char *name, char permission, bool is_executable) {
+  if (permission == 'd') {
+    ft_printf(BLUE "%s" RESET, name);
+  } else if (permission == 'l') {
+    ft_printf(CYAN "%s" RESET, name);
+  } else if (is_executable) {
+    ft_printf(GREEN "%s" RESET, name);
+  } else {
+    ft_printf("%s", name);
+  }
 }

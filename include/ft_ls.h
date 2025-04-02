@@ -7,12 +7,21 @@
 
 #include "libft.h"
 
+#define BLUE "\033[1;34m"
+#define GREEN "\033[1;32m"
+#define CYAN "\033[1;36m"
+#define RESET "\033[0m"
+
 typedef struct s_flags {
-  bool all;
-  bool list;
-  bool recursive;
-  bool reverse;
-  bool time;
+  bool all;         // -a -> Show hidden files
+  bool list;        // -l -> Detailed display
+  bool recursive;   // -R -> Recursive listing
+  bool reverse;     // -r -> Reverse order
+  bool time;        // -t -> Sort by modification time
+  bool access;      // -u -> Sort by access time
+  bool no_sort;     // -f -> Disable sorting
+  bool no_owner;    // -g -> Similar to -l, but without owner name
+  bool files_only;  // -d -> List directories as regular files
 } t_flags;
 
 typedef struct s_entry {
@@ -27,6 +36,7 @@ typedef struct s_entry {
   time_t time_sec;
   long time_nsec;
   char *link;
+  bool is_executable;
 } t_entry;
 
 typedef struct s_tabulation {
