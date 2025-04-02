@@ -26,7 +26,7 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "/home/cobli/Documentos/pessoal/42sp-ft-ls/ft_ls",
-      "args": [],
+      "args": ["-f"],
       "stopAtEntry": false,
       "cwd": "/home/cobli/Documentos/pessoal/42sp-ft-ls",
       "externalConsole": false,

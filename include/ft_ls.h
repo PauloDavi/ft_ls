@@ -22,6 +22,7 @@ typedef struct s_flags {
   bool no_sort;     // -f -> Disable sorting
   bool no_owner;    // -g -> Similar to -l, but without owner name
   bool files_only;  // -d -> List directories as regular files
+  bool no_colors;   // when -f -> Disable colors
 } t_flags;
 
 typedef struct s_entry {

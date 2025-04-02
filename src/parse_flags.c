@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 17:45:09 by cobli             #+#    #+#             */
-/*   Updated: 2025/04/01 23:02:44 by cobli            ###   ########.fr       */
+/*   Updated: 2025/04/02 00:18:24 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,11 +44,18 @@ static bool parse_flag(const char *arg, t_flags *flags) {
       flags->recursive = true;
     else if (arg[i] == 'u')
       flags->access = true;
-    else if (arg[i] == 'f')
+    else if (arg[i] == 'f') {
       flags->no_sort = true;
-    else if (arg[i] == 'g')
+      flags->all = true;
+      flags->no_colors = true;
+      flags->list = false;
+      flags->no_owner = false;
+      flags->time = false;
+      flags->reverse = false;
+    } else if (arg[i] == 'g') {
       flags->no_owner = true;
-    else if (arg[i] == 'd')
+      flags->list = true;
+    } else if (arg[i] == 'd')
       flags->files_only = true;
     else
       return (false);
