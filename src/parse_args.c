@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 17:45:09 by cobli             #+#    #+#             */
-/*   Updated: 2025/04/01 20:20:32 by cobli            ###   ########.fr       */
+/*   Updated: 2025/04/01 23:02:25 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 
 #include "ft_ls.h"
 
-static bool create_default_dir(t_list **directories);
+static bool create_default_dir(t_list **directories, const t_flags *flags);
 static bool add_file(t_list **files, t_list **directories, t_entry *entry);
 
-bool parse_args(t_list **files, t_list **directories, int argc, char **argv) {
+bool parse_args(t_list **files, t_list **directories, int argc, char **argv, const t_flags *flags) {
   *files = NULL;
   *directories = NULL;
 
@@ -27,7 +27,7 @@ bool parse_args(t_list **files, t_list **directories, int argc, char **argv) {
       continue;
     }
 
-    t_entry *entry = create_entry(NULL, argv[i]);
+    t_entry *entry = create_entry(NULL, argv[i], flags);
     if (entry == NULL) {
       ft_fprintf(STDERR_FILENO, "%s: cannot access '%s': No such file or directory\n", argv[0], argv[i]);
       continue;
@@ -42,7 +42,7 @@ bool parse_args(t_list **files, t_list **directories, int argc, char **argv) {
   }
 
   if (*files == NULL && *directories == NULL) {
-    return (create_default_dir(directories));
+    return (create_default_dir(directories, flags));
   }
 
   return (true);
@@ -64,8 +64,8 @@ static bool add_file(t_list **files, t_list **directories, t_entry *entry) {
   return (true);
 }
 
-static bool create_default_dir(t_list **directories) {
-  t_entry *entry = create_entry(NULL, ".");
+static bool create_default_dir(t_list **directories, const t_flags *flags) {
+  t_entry *entry = create_entry(NULL, ".", flags);
   if (!add_file(NULL, directories, entry)) {
     free(entry);
     return (false);

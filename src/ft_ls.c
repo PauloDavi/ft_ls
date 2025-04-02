@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 09:37:15 by cobli             #+#    #+#             */
-/*   Updated: 2025/04/01 20:39:31 by cobli            ###   ########.fr       */
+/*   Updated: 2025/04/01 22:58:49 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
 
   t_list *files = NULL;
   t_list *directories = NULL;
-  if (!parse_args(&files, &directories, argc, argv)) {
+  if (!parse_args(&files, &directories, argc, argv, &flags)) {
     return (EXIT_FAILURE);
   }
 

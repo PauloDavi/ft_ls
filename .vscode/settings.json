@@ -1,10 +1,7 @@
 {
   "C_Cpp.default.intelliSenseMode": "gcc-x64",
   "C_Cpp.default.compilerPath": "/usr/bin/gcc",
-  "C_Cpp.default.includePath": [
-    "${workspaceFolder}/include",
-    "${workspaceFolder}/lib/libft"
-  ],
+  "C_Cpp.default.includePath": ["${workspaceFolder}/include", "${workspaceFolder}/lib/libft"],
   "C_Cpp.default.defines": [],
   "files.associations": {
     ".sequelizerc": "javascript",
@@ -18,7 +15,8 @@
     "string_view": "c",
     "initializer_list": "c",
     "utility": "c",
-    "functional": "c"
+    "functional": "c",
+    "random": "c"
   },
   "editor.formatOnSave": true,
   "editor.tabSize": 2,
@@ -61,18 +59,8 @@
   "C_Cpp_Runner.compilerArgs": [],
   "C_Cpp_Runner.linkerArgs": [],
   "C_Cpp_Runner.includePaths": [],
-  "C_Cpp_Runner.includeSearch": [
-    "*",
-    "**/*"
-  ],
-  "C_Cpp_Runner.excludeSearch": [
-    "**/build",
-    "**/build/**",
-    "**/.*",
-    "**/.*/**",
-    "**/.vscode",
-    "**/.vscode/**"
-  ],
+  "C_Cpp_Runner.includeSearch": ["*", "**/*"],
+  "C_Cpp_Runner.excludeSearch": ["**/build", "**/build/**", "**/.*", "**/.*/**", "**/.vscode", "**/.vscode/**"],
   "C_Cpp_Runner.useAddressSanitizer": false,
   "C_Cpp_Runner.useUndefinedSanitizer": false,
   "C_Cpp_Runner.useLeakSanitizer": false,

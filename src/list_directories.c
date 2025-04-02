@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 09:37:12 by cobli             #+#    #+#             */
-/*   Updated: 2025/04/01 21:03:49 by cobli            ###   ########.fr       */
+/*   Updated: 2025/04/01 22:59:35 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ static bool list_directory(const char *path, const t_flags *flags, bool show_dir
     if (entry->d_name[0] == '.' && !flags->all) {
       continue;
     }
-    if (!add_entry(path, entry->d_name, &list)) {
+    if (!add_entry(path, entry->d_name, &list, flags)) {
       closedir(dir);
       return (false);
     }

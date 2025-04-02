@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 11:22:09 by cobli             #+#    #+#             */
-/*   Updated: 2025/04/01 22:47:34 by cobli            ###   ########.fr       */
+/*   Updated: 2025/04/01 23:02:06 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,11 @@
 
 static void get_link_information(t_entry *entry, const char *path);
 static void get_user_and_group_information(t_entry *entry, const struct stat *file_stat);
-static void get_time_information(t_entry *entry, const struct stat *file_stat);
+static void get_time_information(t_entry *entry, const struct stat *file_stat, const t_flags *flags);
 static void get_permissions(mode_t mode, char *perm);
-static t_entry *init_entry(struct stat *file_stat, const char *filename, const char *full_path);
+static t_entry *init_entry(struct stat *file_stat, const char *filename, const char *full_path, const t_flags *flags);
 
-t_entry *create_entry(const char *path, const char *filename) {
+t_entry *create_entry(const char *path, const char *filename, const t_flags *flags) {
   struct stat file_stat;
   char full_path[PATH_MAX];
 
@@ -42,11 +42,11 @@ t_entry *create_entry(const char *path, const char *filename) {
     return (NULL);
   }
 
-  return (init_entry(&file_stat, filename, full_path));
+  return (init_entry(&file_stat, filename, full_path, flags));
 }
 
-bool add_entry(const char *path, const char *filename, t_list **list) {
-  t_entry *entry = create_entry(path, filename);
+bool add_entry(const char *path, const char *filename, t_list **list, const t_flags *flags) {
+  t_entry *entry = create_entry(path, filename, flags);
   if (entry == NULL) {
     perror("malloc");
     ft_lstclear(list, free_entry);
@@ -76,7 +76,7 @@ void free_entry(void *entry) {
   }
 }
 
-static t_entry *init_entry(struct stat *file_stat, const char *filename, const char *full_path) {
+static t_entry *init_entry(struct stat *file_stat, const char *filename, const char *full_path, const t_flags *flags) {
   t_entry *entry = malloc(sizeof(t_entry));
   if (!entry) {
     perror("malloc");
@@ -97,7 +97,7 @@ static t_entry *init_entry(struct stat *file_stat, const char *filename, const c
 
   get_permissions(file_stat->st_mode, entry->permissions);
   get_user_and_group_information(entry, file_stat);
-  get_time_information(entry, file_stat);
+  get_time_information(entry, file_stat, flags);
   if (S_ISLNK(file_stat->st_mode)) {
     get_link_information(entry, full_path);
   }
@@ -123,16 +123,19 @@ static void get_user_and_group_information(t_entry *entry, const struct stat *fi
   entry->group = ft_strdup(gr ? gr->gr_name : "?");
 }
 
-static void get_time_information(t_entry *entry, const struct stat *file_stat) {
-  char *time_str = ctime(&file_stat->st_mtime);
+static void get_time_information(t_entry *entry, const struct stat *file_stat, const t_flags *flags) {
+  time_t time = flags->access ? file_stat->st_atime : file_stat->st_mtime;
+  struct timespec tim = flags->access ? file_stat->st_atim : file_stat->st_mtim;
+
+  char *time_str = ctime(&time);
   if (time_str) {
     time_str[16] = '\0';
     entry->s_time = ft_strdup(time_str + 4);
   } else {
     entry->s_time = ft_strdup("?");
   }
-  entry->time_sec = file_stat->st_mtim.tv_sec;
-  entry->time_nsec = file_stat->st_mtim.tv_nsec;
+  entry->time_sec = tim.tv_sec;
+  entry->time_nsec = tim.tv_nsec;
 }
 
 static void get_permissions(mode_t mode, char *perm) {
