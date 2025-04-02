@@ -6,16 +6,16 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 17:04:59 by cobli             #+#    #+#             */
-/*   Updated: 2025/04/01 22:51:11 by cobli            ###   ########.fr       */
+/*   Updated: 2025/04/01 23:13:37 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
 static void print_entry_name(void *content);
-static void print_entry(t_entry *entry, t_tabulation tab);
+static void print_entry(t_entry *entry, t_tabulation tab, const t_flags *flags);
 static void print_total_blocks(t_list *list);
-void print_entries(t_list *lst, t_tabulation tab);
+void print_entries(t_list *lst, t_tabulation tab, const t_flags *flags);
 static void print_files(t_list *list, const t_flags *flags, bool is_files);
 static void print_name(char *name, char permission, bool is_executable);
 
@@ -27,10 +27,10 @@ void display_list(t_list *list, const t_flags *flags, bool is_files) {
 }
 
 static void print_files(t_list *list, const t_flags *flags, bool is_files) {
-  if (flags->list) {
+  if (flags->list || flags->no_owner) {
     if (!is_files) print_total_blocks(list);
     t_tabulation tab = find_max_tabulations(list);
-    print_entries(list, tab);
+    print_entries(list, tab, flags);
   } else {
     ft_lstiter(list, print_entry_name);
   }
@@ -54,25 +54,20 @@ static void print_entry_name(void *content) {
   ft_printf("\n");
 }
 
-void print_entries(t_list *lst, t_tabulation tab) {
+void print_entries(t_list *lst, t_tabulation tab, const t_flags *flags) {
   while (lst != NULL) {
-    print_entry(lst->content, tab);
+    print_entry(lst->content, tab, flags);
     lst = lst->next;
   }
 }
 
-static void print_entry(t_entry *entry, t_tabulation tab) {
-  ft_printf("%s %*ld %*s %*s %*ld %s ",
-            entry->permissions,
-            tab.max_nlink,
-            entry->nlink,
-            tab.max_owner,
-            entry->owner,
-            tab.max_group,
-            entry->group,
-            tab.max_size,
-            entry->size,
-            entry->s_time);
+static void print_entry(t_entry *entry, t_tabulation tab, const t_flags *flags) {
+  ft_printf("%s %*ld ", entry->permissions, tab.max_nlink, entry->nlink);
+  if (!flags->no_owner) {
+    ft_printf("%*s ", tab.max_owner, entry->owner);
+  }
+  ft_printf("%*s %*ld %s ", tab.max_group, entry->group, tab.max_size, entry->size, entry->s_time);
+
   print_name(entry->name, entry->permissions[0], entry->is_executable);
   if (entry->link) {
     ft_printf(" -> %s", entry->link);

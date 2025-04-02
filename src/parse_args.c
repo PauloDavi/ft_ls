@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 17:45:09 by cobli             #+#    #+#             */
-/*   Updated: 2025/04/01 23:02:25 by cobli            ###   ########.fr       */
+/*   Updated: 2025/04/01 23:20:56 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 
 #include "ft_ls.h"
 
-static bool create_default_dir(t_list **directories, const t_flags *flags);
-static bool add_file(t_list **files, t_list **directories, t_entry *entry);
+static bool create_default_dir(t_list **files, t_list **directories, const t_flags *flags);
+static bool add_file(t_list **files, t_list **directories, t_entry *entry, const t_flags *flags);
 
 bool parse_args(t_list **files, t_list **directories, int argc, char **argv, const t_flags *flags) {
   *files = NULL;
@@ -33,7 +33,7 @@ bool parse_args(t_list **files, t_list **directories, int argc, char **argv, con
       continue;
     }
 
-    if (!add_file(files, directories, entry)) {
+    if (!add_file(files, directories, entry, flags)) {
       ft_lstclear(files, free_entry);
       ft_lstclear(directories, free_entry);
       free(entry);
@@ -42,20 +42,20 @@ bool parse_args(t_list **files, t_list **directories, int argc, char **argv, con
   }
 
   if (*files == NULL && *directories == NULL) {
-    return (create_default_dir(directories, flags));
+    return (create_default_dir(files, directories, flags));
   }
 
   return (true);
 }
 
-static bool add_file(t_list **files, t_list **directories, t_entry *entry) {
+static bool add_file(t_list **files, t_list **directories, t_entry *entry, const t_flags *flags) {
   t_list *new_content = ft_lstnew(entry);
   if (!new_content) {
     perror("malloc");
     return (false);
   }
 
-  if (entry->permissions[0] == 'd') {
+  if (!flags->files_only && entry->permissions[0] == 'd') {
     ft_lstadd_front(directories, new_content);
   } else {
     ft_lstadd_front(files, new_content);
@@ -64,9 +64,9 @@ static bool add_file(t_list **files, t_list **directories, t_entry *entry) {
   return (true);
 }
 
-static bool create_default_dir(t_list **directories, const t_flags *flags) {
+static bool create_default_dir(t_list **files, t_list **directories, const t_flags *flags) {
   t_entry *entry = create_entry(NULL, ".", flags);
-  if (!add_file(NULL, directories, entry)) {
+  if (!add_file(files, directories, entry, flags)) {
     free(entry);
     return (false);
   }
