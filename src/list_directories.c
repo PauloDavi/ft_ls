@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 09:37:12 by cobli             #+#    #+#             */
-/*   Updated: 2025/04/01 22:59:35 by cobli            ###   ########.fr       */
+/*   Updated: 2025/04/06 12:03:00 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ static bool list_directory(const char *path, const t_flags *flags, bool show_dir
   }
   closedir(dir);
 
-  display_list(list, flags, false);
+  display_list(&list, flags, false);
 
   if (flags->recursive) {
     recursive_call(list, path, flags);

@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 09:37:15 by cobli             #+#    #+#             */
-/*   Updated: 2025/04/01 22:58:49 by cobli            ###   ########.fr       */
+/*   Updated: 2025/04/06 12:02:48 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
 
   bool has_files = files != NULL;
   if (has_files) {
-    display_list(files, &flags, true);
+    display_list(&files, &flags, true);
     ft_lstclear(&files, free_entry);
   }
 

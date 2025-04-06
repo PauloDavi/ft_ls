@@ -16,7 +16,8 @@
     "initializer_list": "c",
     "utility": "c",
     "functional": "c",
-    "random": "c"
+    "random": "c",
+    "typeinfo": "c"
   },
   "editor.formatOnSave": true,
   "editor.tabSize": 2,

@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 17:08:50 by cobli             #+#    #+#             */
-/*   Updated: 2025/04/01 20:26:33 by cobli            ###   ########.fr       */
+/*   Updated: 2025/04/06 12:05:27 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,15 @@
 static int alphabetical_order(void *a, void *b);
 static int time_order(void *a, void *b);
 
-void order_files(t_list *list, const t_flags *flags) {
+void order_files(t_list **list, const t_flags *flags) {
   if (flags->time) {
-    ft_lst_sort(list, time_order);
+    ft_lst_sort(*list, time_order);
   } else {
-    ft_lst_sort(list, alphabetical_order);
+    ft_lst_sort(*list, alphabetical_order);
   }
 
   if (flags->reverse) {
-    ft_lst_revert(list);
+    ft_lst_reverse(list);
   }
 }
 

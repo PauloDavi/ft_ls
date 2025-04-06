@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 11:22:09 by cobli             #+#    #+#             */
-/*   Updated: 2025/04/02 00:01:13 by cobli            ###   ########.fr       */
+/*   Updated: 2025/04/06 15:19:03 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,11 @@
 #include <pwd.h>
 #include <stdio.h>
 #include <sys/stat.h>
+#include <sys/sysmacros.h>
 #include <sys/types.h>
+#include <sys/xattr.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "ft_ls.h"
 
@@ -26,6 +29,7 @@ static void get_user_and_group_information(t_entry *entry, const struct stat *fi
 static void get_time_information(t_entry *entry, const struct stat *file_stat, const t_flags *flags);
 static void get_permissions(mode_t mode, char *perm);
 static t_entry *init_entry(struct stat *file_stat, const char *filename, const char *full_path, const t_flags *flags);
+static bool has_acl(const char *path);
 
 t_entry *create_entry(const char *path, const char *filename, const t_flags *flags) {
   struct stat file_stat;
@@ -71,7 +75,10 @@ void free_entry(void *entry) {
     free(((t_entry *)entry)->owner);
     free(((t_entry *)entry)->group);
     free(((t_entry *)entry)->s_time);
-    if (((t_entry *)entry)->link) free(((t_entry *)entry)->link);
+    if (((t_entry *)entry)->link) {
+      free(((t_entry *)entry)->link->name);
+      free(((t_entry *)entry)->link);
+    };
     free(entry);
   }
 }
@@ -93,9 +100,22 @@ static t_entry *init_entry(struct stat *file_stat, const char *filename, const c
   entry->nlink = file_stat->st_nlink;
   entry->size = file_stat->st_size;
   entry->blocks = file_stat->st_blocks;
+  entry->mode = file_stat->st_mode;
   entry->is_executable = (file_stat->st_mode & S_IXUSR) || (file_stat->st_mode & S_IXGRP) || (file_stat->st_mode & S_IXOTH);
+  entry->is_special = S_ISCHR(file_stat->st_mode) || S_ISBLK(file_stat->st_mode);
+  if (entry->is_special) {
+    entry->major = major(file_stat->st_rdev);
+    entry->minor = minor(file_stat->st_rdev);
+  } else {
+    entry->major = 0;
+    entry->minor = 0;
+  }
 
   get_permissions(file_stat->st_mode, entry->permissions);
+  if (has_acl(full_path)) {
+    entry->permissions[10] = '+';
+  }
+
   get_user_and_group_information(entry, file_stat);
   get_time_information(entry, file_stat, flags);
   if (S_ISLNK(file_stat->st_mode)) {
@@ -108,11 +128,21 @@ static t_entry *init_entry(struct stat *file_stat, const char *filename, const c
 static void get_link_information(t_entry *entry, const char *path) {
   char link_target[PATH_MAX];
   ssize_t len = readlink(path, link_target, sizeof(link_target) - 1);
+  link_target[len] = '\0';
+  entry->link = malloc(sizeof(t_link));
+  ft_memset(entry->link, 0, sizeof(t_link));
   if (len != -1) {
-    link_target[len] = '\0';
-    entry->link = ft_strdup(link_target);
+    entry->link->name = ft_strdup(link_target);
+    struct stat link_stat;
+    if (stat(link_target, &link_stat) == 0) {
+      entry->link->mode = link_stat.st_mode;
+      entry->link->exist = true;
+      entry->link->is_executable = (link_stat.st_mode & S_IXUSR) || (link_stat.st_mode & S_IXGRP) || (link_stat.st_mode & S_IXOTH);
+    } else {
+      entry->link->exist = false;
+    }
   } else {
-    entry->link = ft_strdup("?");
+    entry->link->name = ft_strdup("?");
   }
 }
 
@@ -156,13 +186,44 @@ static void get_permissions(mode_t mode, char *perm) {
 
   if (mode & S_IRUSR) perm[1] = 'r';
   if (mode & S_IWUSR) perm[2] = 'w';
+  if (mode & S_IXUSR && !S_ISCHR(mode) && !S_ISBLK(mode)) {
+    perm[3] = (mode & S_ISUID ? 's' : 'x');
+  } else if (mode & S_ISUID) {
+    perm[3] = 'S';
+  }
+
   if (mode & S_IXUSR) perm[3] = 'x';
 
   if (mode & S_IRGRP) perm[4] = 'r';
   if (mode & S_IWGRP) perm[5] = 'w';
-  if (mode & S_IXGRP) perm[6] = 'x';
-
+  if (mode & S_IXGRP && !S_ISCHR(mode) && !S_ISBLK(mode)) {
+    perm[6] = (mode & S_ISGID ? 's' : 'x');
+  } else if (mode & S_ISGID) {
+    perm[6] = 'S';
+  }
   if (mode & S_IROTH) perm[7] = 'r';
   if (mode & S_IWOTH) perm[8] = 'w';
-  if (mode & S_IXOTH) perm[9] = 'x';
+
+  if (mode & S_IXOTH && !S_ISCHR(mode) && !S_ISBLK(mode)) {
+    perm[9] = (mode & S_ISVTX ? 't' : 'x');
+  } else if (mode & S_ISVTX) {
+    perm[9] = 'T';
+  }
+}
+
+static bool has_acl(const char *path) {
+  char buff[255];
+  int size = listxattr(path, buff, 255);
+  if (size <= 0) {
+    return (false);
+  }
+
+  char *attr = buff;
+  while (attr < buff + size) {
+    if (ft_strlen(attr)) {
+      return (true);
+    }
+    attr += ft_strlen(attr) + 1;
+  }
+  return (false);
 }
