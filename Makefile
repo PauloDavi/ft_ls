@@ -14,7 +14,7 @@ INCLUDE_DIR := include
 INCLUDES := -I$(INCLUDE_DIR) -I$(LIBFT_DIR)
 
 SRCS := ft_ls.c list_directories.c file_entry.c tabulation.c print_utils.c
-SRCS += parse_args.c order_files.c parse_flags.c utils.c
+SRCS += parse_args.c order_files.c parse_flags.c utils.c terminal.c
 OBJS := $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
 
 all: $(LIBFT) $(NAME)

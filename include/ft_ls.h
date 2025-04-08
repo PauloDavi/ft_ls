@@ -67,5 +67,7 @@ void free_entry(void *entry);
 void concat_paths(char *dest, const char *path, const char *filename);
 void display_list(t_list **list, const t_flags *flags, bool is_files);
 t_tabulation find_max_tabulations(t_list *list);
+void print_columns(t_list *list, const t_flags *flags);
+void print_name(char *name, mode_t mode, bool is_executable, bool no_colors, size_t len);
 
 #endif
