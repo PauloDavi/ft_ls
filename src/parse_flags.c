@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 17:45:09 by cobli             #+#    #+#             */
-/*   Updated: 2025/04/08 22:20:14 by cobli            ###   ########.fr       */
+/*   Updated: 2025/04/09 07:44:33 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,8 @@ static bool parse_flag(const char *exec_name, const char *arg, t_flags *flags) {
     } else if (arg[i] == 'g') {
       flags->no_owner = true;
       flags->list = true;
+    } else if (arg[i] == 'G') {
+      flags->no_group = true;
     } else if (arg[i] == 'd') {
       flags->files_only = true;
     } else if (arg[i] == 'Q') {

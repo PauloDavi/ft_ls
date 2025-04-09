@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 17:04:59 by cobli             #+#    #+#             */
-/*   Updated: 2025/04/08 22:42:08 by cobli            ###   ########.fr       */
+/*   Updated: 2025/04/09 08:28:23 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,9 @@ static void print_entry(t_entry *entry, const t_tabulation *tab, const t_flags *
     ft_printf("%-*s ", tab->max_owner, entry->owner);
   }
 
-  ft_printf("%-*s ", tab->max_group, entry->group);
+  if (!flags->no_group) {
+    ft_printf("%-*s ", tab->max_group, entry->group);
+  }
 
   if (entry->is_special) {
     ft_printf("%*d, %*d ", tab->max_major, entry->major, tab->max_minor, entry->minor);

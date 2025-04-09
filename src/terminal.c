@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 19:20:13 by cobli             #+#    #+#             */
-/*   Updated: 2025/04/08 22:57:06 by cobli            ###   ########.fr       */
+/*   Updated: 2025/04/09 07:50:03 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@ static size_t get_terminal_width();
 static t_list **convert_list_to_array(t_list *list, size_t size);
 static size_t calculate_columns(size_t size, size_t term_width, size_t *col_widths, t_list **array, const t_flags *flags);
 static void print_row(size_t row, size_t cols, size_t rows, size_t size, t_list **array, size_t *col_widths, const t_flags *flags);
+static void print_entry_with_comma(const t_entry *entry, const t_flags *flags, bool is_last);
+static bool should_break_line(size_t total_width, size_t current_width, size_t term_width);
 
 void print_columns(t_list *list, const t_flags *flags) {
   size_t term_width = get_terminal_width();
@@ -51,33 +53,35 @@ void print_comma(t_list *list, const t_flags *flags) {
   size_t total_width = 0;
 
   while (current) {
-    bool has_break = false;
     t_entry *entry = (t_entry *)current->content;
+
     size_t current_width = ft_strlen(entry->name);
     if (flags->comma) current_width += 2;
     if (current->next) current_width += 1;
 
-    if ((total_width + current_width) > term_width) {
+    if (should_break_line(total_width, current_width, term_width)) {
       ft_printf("\n");
-      has_break = true;
-    }
-
-    print_name(entry->name, entry->mode, entry->is_executable, !flags->color, flags->quote_name, 0);
-
-    if (current->next) {
+      total_width = 0;
       current_width += 1;
-      ft_printf(", ");
     }
 
-    if (has_break) {
-      total_width = current_width;
-    } else {
-      total_width += current_width;
-    }
-
+    print_entry_with_comma(entry, flags, current->next == NULL);
+    total_width += current_width;
     current = current->next;
   }
+
   ft_printf("\n");
+}
+
+static void print_entry_with_comma(const t_entry *entry, const t_flags *flags, bool is_last) {
+  print_name(entry->name, entry->mode, entry->is_executable, !flags->color, flags->quote_name, 0);
+  if (!is_last) {
+    ft_printf(", ");
+  }
+}
+
+static bool should_break_line(size_t total_width, size_t current_width, size_t term_width) {
+  return (total_width + current_width) > term_width;
 }
 
 static size_t get_terminal_width() {

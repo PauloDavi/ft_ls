@@ -19,6 +19,7 @@
   -u                  access time instead of modification time\n\
   -f                  do not sort, enable -a and disable -l\n\
   -g                  like -l, but do not list owner\n\
+  -G, --no-group      \n\
   -d --directory      list directories themselves, not their contents\n\
   -N --literal        print entry names without quoting\n\
   -Q --quote-name     enclose entry names in double quotes\n\
@@ -35,6 +36,7 @@ typedef struct s_flags {
   bool access;      // -u -> Sort by access time
   bool no_sort;     // -f -> Disable sorting
   bool no_owner;    // -g -> Similar to -l, but without owner name
+  bool no_group;    // -G -> Similar to -l, but without group name
   bool files_only;  // -d -> List directories as regular files
   bool quote_name;  // -Q -> Enclose entry names in double quotes
   bool comma;       // -m -> Comma-separated list
