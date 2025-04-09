@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 17:04:59 by cobli             #+#    #+#             */
-/*   Updated: 2025/04/07 23:22:52 by cobli            ###   ########.fr       */
+/*   Updated: 2025/04/08 22:42:08 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,20 @@ void display_list(t_list **list, const t_flags *flags, bool is_files) {
   print_files(*list, flags, is_files);
 }
 
-void print_name(char *name, mode_t mode, bool is_executable, bool no_colors, size_t len) {
+void print_name(char *filename, mode_t mode, bool is_executable, bool no_colors, bool has_quote, size_t len) {
+  char *name = filename;
+  if (has_quote) {
+    size_t quote_len = ft_strlen(filename) + 2;
+    name = malloc(quote_len + 1);
+    ft_memset(name, '"', quote_len + 1);
+    ft_strcpy(name + 1, filename, quote_len - 1);
+    name[quote_len - 1] = '"';
+    name[quote_len] = '\0';
+  }
+
   if (no_colors) {
     ft_printf("%-*s", len, name);
+    if (has_quote) free(name);
     return;
   }
 
@@ -63,12 +74,15 @@ void print_name(char *name, mode_t mode, bool is_executable, bool no_colors, siz
   } else {
     ft_printf("%-*s", len, name);
   }
+  if (has_quote) free(name);
 }
 
 static void print_files(t_list *list, const t_flags *flags, bool is_files) {
   if (flags->list) {
     if (!is_files) print_total_blocks(list);
     print_entries(list, flags);
+  } else if (flags->comma) {
+    print_comma(list, flags);
   } else {
     print_columns(list, flags);
   }
@@ -111,10 +125,10 @@ static void print_entry(t_entry *entry, const t_tabulation *tab, const t_flags *
 
   ft_printf("%s ", entry->s_time);
 
-  print_name(entry->name, entry->mode, entry->is_executable, flags->no_colors, 0);
+  print_name(entry->name, entry->mode, entry->is_executable, !flags->color, flags->quote_name, 0);
   if (entry->link) {
     ft_printf(" -> ");
-    print_name(entry->link->name, entry->link->mode, entry->link->is_executable, flags->no_colors, 0);
+    print_name(entry->link->name, entry->link->mode, entry->link->is_executable, !flags->color, flags->quote_name, 0);
   }
   ft_printf("\n");
 }

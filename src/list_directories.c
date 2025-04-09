@@ -6,7 +6,7 @@
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 09:37:12 by cobli             #+#    #+#             */
-/*   Updated: 2025/04/06 12:03:00 by cobli            ###   ########.fr       */
+/*   Updated: 2025/04/08 22:26:35 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,11 @@ static bool list_directory(const char *path, const t_flags *flags, bool show_dir
 
   if (show_dir_name) {
     if (break_line_before) ft_printf("\n");
-    ft_printf("%s:\n", path);
+    if (flags->comma) {
+      ft_printf("\"%s\":\n", path);
+    } else {
+      ft_printf("%s:\n", path);
+    }
   }
 
   t_list *list = NULL;

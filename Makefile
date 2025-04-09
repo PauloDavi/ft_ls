@@ -1,7 +1,7 @@
 VPATH := src
 
 NAME := ft_ls
-CFLAGS := -Wextra -Wall -Werror -O3 -g3
+CFLAGS := -Wextra -Wall -Werror -g3
 CC := cc
 RM := rm -rf
 

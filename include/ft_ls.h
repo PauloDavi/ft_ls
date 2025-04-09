@@ -8,8 +8,26 @@
 #include "color.h"
 #include "libft.h"
 
+#define HELP \
+  "Usage: %s [OPTION]... [FILE]...\n\
+  -a, --all           do not ignore entries starting with .\n\
+  -A, --almost-all    do not list implied . and ..\n\
+  -l                  use a long listing format\n\
+  -R, --recursive     list subdirectories recursively\n\
+  -r, --reverse       reverse order while sorting\n\
+  -t                  sort by time modified (most recent first)\n\
+  -u                  access time instead of modification time\n\
+  -f                  do not sort, enable -a and disable -l\n\
+  -g                  like -l, but do not list owner\n\
+  -d --directory      list directories themselves, not their contents\n\
+  -N --literal        print entry names without quoting\n\
+  -Q --quote-name     enclose entry names in double quotes\n\
+  -m                  fill width with a comma separated list of entries\n\
+  --color             colorize the output\n"
+
 typedef struct s_flags {
   bool all;         // -a -> Show hidden files
+  bool almost_all;  // -A -> Show hidden files except . and ..
   bool list;        // -l -> Detailed display
   bool recursive;   // -R -> Recursive listing
   bool reverse;     // -r -> Reverse order
@@ -18,7 +36,9 @@ typedef struct s_flags {
   bool no_sort;     // -f -> Disable sorting
   bool no_owner;    // -g -> Similar to -l, but without owner name
   bool files_only;  // -d -> List directories as regular files
-  bool no_colors;   // when -f -> Disable colors
+  bool quote_name;  // -Q -> Enclose entry names in double quotes
+  bool comma;       // -m -> Comma-separated list
+  bool color;       // --color -> Colorize the output
 } t_flags;
 
 typedef struct s_link {
@@ -68,6 +88,7 @@ void concat_paths(char *dest, const char *path, const char *filename);
 void display_list(t_list **list, const t_flags *flags, bool is_files);
 t_tabulation find_max_tabulations(t_list *list);
 void print_columns(t_list *list, const t_flags *flags);
-void print_name(char *name, mode_t mode, bool is_executable, bool no_colors, size_t len);
+void print_name(char *filename, mode_t mode, bool is_executable, bool no_colors, bool has_quote, size_t len);
+void print_comma(t_list *list, const t_flags *flags);
 
 #endif
