@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_ls.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: pdavi-al <pdavi-al@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/22 14:02:36 by pdavi-al          #+#    #+#             */
+/*   Updated: 2025/06/22 14:02:36 by pdavi-al         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef FT_LS_H
 #define FT_LS_H
 
@@ -26,57 +38,73 @@
   -m                  fill width with a comma separated list of entries\n\
   --color             colorize the output\n"
 
+/**
+ * @struct s_flags
+ * @brief Stores all command-line flags and options for ft_ls.
+ */
 typedef struct s_flags {
-  bool all;         // -a -> Show hidden files
-  bool almost_all;  // -A -> Show hidden files except . and ..
-  bool list;        // -l -> Detailed display
-  bool recursive;   // -R -> Recursive listing
-  bool reverse;     // -r -> Reverse order
-  bool time;        // -t -> Sort by modification time
-  bool access;      // -u -> Sort by access time
-  bool no_sort;     // -f -> Disable sorting
-  bool no_owner;    // -g -> Similar to -l, but without owner name
-  bool no_group;    // -G -> Similar to -l, but without group name
-  bool files_only;  // -d -> List directories as regular files
-  bool quote_name;  // -Q -> Enclose entry names in double quotes
-  bool comma;       // -m -> Comma-separated list
-  bool color;       // --color -> Colorize the output
+  bool all;        /**< -a: Show hidden files */
+  bool almost_all; /**< -A: Show hidden files except . and .. */
+  bool list;       /**< -l: Detailed display */
+  bool recursive;  /**< -R: Recursive listing */
+  bool reverse;    /**< -r: Reverse order */
+  bool time;       /**< -t: Sort by modification time */
+  bool access;     /**< -u: Sort by access time */
+  bool no_sort;    /**< -f: Disable sorting */
+  bool no_owner;   /**< -g: Like -l, but without owner name */
+  bool no_group;   /**< -G: Like -l, but without group name */
+  bool files_only; /**< -d: List directories as regular files */
+  bool quote_name; /**< -Q: Enclose entry names in double quotes */
+  bool comma;      /**< -m: Comma-separated list */
+  bool color;      /**< --color: Colorize the output */
 } t_flags;
 
+/**
+ * @struct s_link
+ * @brief Stores information about a symbolic link.
+ */
 typedef struct s_link {
-  char *name;
-  mode_t mode;
-  bool exist;
-  bool is_executable;
+  char *name;         /**< Link target name */
+  mode_t mode;        /**< Link target mode */
+  bool exist;         /**< Whether the link target exists */
+  bool is_executable; /**< Whether the link target is executable */
 } t_link;
 
+/**
+ * @struct s_entry
+ * @brief Represents a file or directory entry with all metadata needed for display.
+ */
 typedef struct s_entry {
-  char *name;
-  char permissions[12];
-  char *owner;
-  char *group;
-  blkcnt_t blocks;
-  off_t size;
-  nlink_t nlink;
-  char *s_time;
-  time_t time_sec;
-  long time_nsec;
-  t_link *link;
-  mode_t mode;
-  bool is_executable;
-  bool is_special;
-  int major;
-  int minor;
+  char *name;           /**< File or directory name */
+  char permissions[12]; /**< Permissions string (e.g. "-rwxr-xr-x") */
+  char *owner;          /**< Owner name */
+  char *group;          /**< Group name */
+  blkcnt_t blocks;      /**< Number of blocks */
+  off_t size;           /**< File size in bytes */
+  nlink_t nlink;        /**< Number of hard links */
+  char *s_time;         /**< Formatted time string */
+  time_t time_sec;      /**< Time (seconds) for sorting */
+  long time_nsec;       /**< Time (nanoseconds) for sorting */
+  t_link *link;         /**< Symbolic link info (if applicable) */
+  mode_t mode;          /**< File mode (type and permissions) */
+  bool is_executable;   /**< Whether the file is executable */
+  bool is_special;      /**< Whether the file is a special device */
+  int major;            /**< Major device number (if special) */
+  int minor;            /**< Minor device number (if special) */
 } t_entry;
 
+/**
+ * @struct s_tabulation
+ * @brief Stores maximum widths for each column for pretty-printing tables.
+ */
 typedef struct s_tabulation {
-  size_t max_permission;
-  size_t max_nlink;
-  size_t max_owner;
-  size_t max_group;
-  size_t max_size;
-  size_t max_major;
-  size_t max_minor;
+  size_t max_permission; /**< Max width for permissions column */
+  size_t max_nlink;      /**< Max width for nlink column */
+  size_t max_owner;      /**< Max width for owner column */
+  size_t max_group;      /**< Max width for group column */
+  size_t max_size;       /**< Max width for size column */
+  size_t max_major;      /**< Max width for major device column */
+  size_t max_minor;      /**< Max width for minor device column */
 } t_tabulation;
 
 bool list_directories(t_list *list, const t_flags *flags, bool has_files_before);
