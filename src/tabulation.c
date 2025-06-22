@@ -12,8 +12,18 @@
 
 #include "ft_ls.h"
 
+/**
+ * @brief Update tabulation struct with the maximum widths for each field.
+ * @param tab Pointer to the tabulation struct
+ * @param entry Entry to consider
+ */
 static void calc_tabulation(t_tabulation *tab, t_entry *entry);
 
+/**
+ * @brief Find the maximum widths for each column in a list of entries.
+ * @param list List of entries
+ * @return Tabulation struct with maximum widths
+ */
 t_tabulation find_max_tabulations(t_list *list) {
   t_tabulation tab = {0, 0, 0, 0, 0, 0, 0};
   t_list *current = list;

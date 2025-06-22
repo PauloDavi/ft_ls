@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   file_entry.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pdavi-al <pdavi-al@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/30 11:22:09 by cobli             #+#    #+#             */
-/*   Updated: 2025/04/08 21:11:44 by cobli            ###   ########.fr       */
+/*   Updated: 2025/06/22 13:33:06 by pdavi-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,59 @@
 
 #include "ft_ls.h"
 
+/**
+ * @brief Get link information for a symbolic link entry.
+ * @param entry Pointer to the entry struct
+ * @param path Path to the symlink
+ */
 static void get_link_information(t_entry *entry, const char *path);
+
+/**
+ * @brief Get user and group information for an entry.
+ * @param entry Pointer to the entry struct
+ * @param file_stat Pointer to the stat struct
+ */
 static void get_user_and_group_information(t_entry *entry, const struct stat *file_stat);
+
+/**
+ * @brief Get time information for an entry (modification or access time).
+ * @param entry Pointer to the entry struct
+ * @param file_stat Pointer to the stat struct
+ * @param flags Pointer to the flags struct
+ */
 static void get_time_information(t_entry *entry, const struct stat *file_stat, const t_flags *flags);
+
+/**
+ * @brief Get permissions string for a file mode.
+ * @param mode File mode
+ * @param perm Output permissions string
+ */
 static void get_permissions(mode_t mode, char *perm);
+
+/**
+ * @brief Initialize a t_entry struct from stat and path info.
+ * @param file_stat Pointer to the stat struct
+ * @param filename File name
+ * @param full_path Full path to the file
+ * @param flags Pointer to the flags struct
+ * @return Pointer to the allocated t_entry, or NULL on error
+ */
 static t_entry *init_entry(const struct stat *file_stat, const char *filename, const char *full_path, const t_flags *flags);
+
+/**
+ * @brief Check if a file has ACL attributes.
+ * @param path File path
+ * @return true if has ACL, false otherwise
+ */
 static bool has_acl(const char *path);
 
+/**
+ * @brief Create a t_entry for a given file or directory.
+ * @param path Directory path or NULL
+ * @param filename File name
+ * @param flags Pointer to the flags struct
+ * @return Pointer to the allocated t_entry, or NULL on error
+ */
 t_entry *create_entry(const char *path, const char *filename, const t_flags *flags) {
   struct stat file_stat;
   char full_path[PATH_MAX];
@@ -48,6 +94,14 @@ t_entry *create_entry(const char *path, const char *filename, const t_flags *fla
   return (init_entry(&file_stat, filename, full_path, flags));
 }
 
+/**
+ * @brief Add a t_entry to a list, creating and allocating it.
+ * @param path Directory path or NULL
+ * @param filename File name
+ * @param list Pointer to the list
+ * @param flags Pointer to the flags struct
+ * @return true on success, false on allocation error
+ */
 bool add_entry(const char *path, const char *filename, t_list **list, const t_flags *flags) {
   t_entry *entry = create_entry(path, filename, flags);
   if (entry == NULL) {
@@ -68,6 +122,10 @@ bool add_entry(const char *path, const char *filename, t_list **list, const t_fl
   return (true);
 }
 
+/**
+ * @brief Free a t_entry and its associated memory.
+ * @param entry Pointer to the entry to free
+ */
 void free_entry(void *entry) {
   if (entry == NULL) return;
 

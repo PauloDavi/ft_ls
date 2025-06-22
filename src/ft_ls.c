@@ -12,6 +12,15 @@
 
 #include "ft_ls.h"
 
+/**
+ * @brief Entry point for the ft_ls program.
+ *
+ * Parses command-line arguments, processes files and directories, and displays the results.
+ *
+ * @param argc Argument count
+ * @param argv Argument vector
+ * @return EXIT_SUCCESS on success, EXIT_FAILURE on error
+ */
 int main(int argc, char **argv) {
   t_flags flags;
 

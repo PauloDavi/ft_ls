@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   terminal.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pdavi-al <pdavi-al@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 19:20:13 by cobli             #+#    #+#             */
-/*   Updated: 2025/04/09 07:50:03 by cobli            ###   ########.fr       */
+/*   Updated: 2025/06/22 13:37:41 by pdavi-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,65 @@
 
 #define MAX_FILES 1024
 
+/**
+ * @brief Get the width of the terminal in columns.
+ * @return Number of columns (default 80 if unknown)
+ */
 static size_t get_terminal_width();
+
+/**
+ * @brief Convert a linked list to an array of pointers for easier column printing.
+ * @param list List to convert
+ * @param size Number of elements
+ * @return Array of pointers to list nodes
+ */
 static t_list **convert_list_to_array(t_list *list, size_t size);
+
+/**
+ * @brief Calculate the number of columns and column widths for printing.
+ * @param size Number of elements
+ * @param term_width Terminal width
+ * @param col_widths Output array for column widths
+ * @param array Array of list nodes
+ * @param flags Flags struct
+ * @return Number of columns
+ */
 static size_t calculate_columns(size_t size, size_t term_width, size_t *col_widths, t_list **array, const t_flags *flags);
+
+/**
+ * @brief Print a single row of entries in column format.
+ * @param row Row index
+ * @param cols Number of columns
+ * @param rows Number of rows
+ * @param size Total number of entries
+ * @param array Array of list nodes
+ * @param col_widths Array of column widths
+ * @param flags Flags struct
+ */
 static void print_row(size_t row, size_t cols, size_t rows, size_t size, t_list **array, size_t *col_widths, const t_flags *flags);
+
+/**
+ * @brief Print a single entry with a comma, for comma-separated output.
+ * @param entry Entry to print
+ * @param flags Flags struct
+ * @param is_last Whether this is the last entry
+ */
 static void print_entry_with_comma(const t_entry *entry, const t_flags *flags, bool is_last);
+
+/**
+ * @brief Determine if a line break is needed for comma-separated output.
+ * @param total_width Current line width
+ * @param current_width Width of the next entry
+ * @param term_width Terminal width
+ * @return true if a break is needed, false otherwise
+ */
 static bool should_break_line(size_t total_width, size_t current_width, size_t term_width);
 
+/**
+ * @brief Print a list of entries in columns, fitting the terminal width.
+ * @param list List of entries
+ * @param flags Flags struct
+ */
 void print_columns(t_list *list, const t_flags *flags) {
   size_t term_width = get_terminal_width();
   size_t size = ft_lstsize(list);
@@ -47,6 +99,11 @@ void print_columns(t_list *list, const t_flags *flags) {
   free(array);
 }
 
+/**
+ * @brief Print a list of entries as a comma-separated list, wrapping as needed.
+ * @param list List of entries
+ * @param flags Flags struct
+ */
 void print_comma(t_list *list, const t_flags *flags) {
   t_list *current = list;
   size_t term_width = get_terminal_width();

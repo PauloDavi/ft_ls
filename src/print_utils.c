@@ -14,11 +14,41 @@
 
 #include "ft_ls.h"
 
+/**
+ * @brief Print a single entry in long format.
+ * @param entry Entry to print
+ * @param tab Tabulation struct for column widths
+ * @param flags Flags struct
+ */
 static void print_entry(t_entry *entry, const t_tabulation *tab, const t_flags *flags);
+
+/**
+ * @brief Print the total number of blocks for a list.
+ * @param list List of entries
+ */
 static void print_total_blocks(t_list *list);
+
+/**
+ * @brief Print all entries in a list in long format.
+ * @param list List of entries
+ * @param flags Flags struct
+ */
 void print_entries(t_list *list, const t_flags *flags);
+
+/**
+ * @brief Print files in the appropriate format (long, comma, or columns).
+ * @param list List of entries
+ * @param flags Flags struct
+ * @param is_files Whether this is the file list (not directories)
+ */
 static void print_files(t_list *list, const t_flags *flags, bool is_files);
 
+/**
+ * @brief Display a list of files or directories, sorting and printing as needed.
+ * @param list Pointer to the list
+ * @param flags Flags struct
+ * @param is_files Whether this is the file list (not directories)
+ */
 void display_list(t_list **list, const t_flags *flags, bool is_files) {
   if (flags->no_sort) {
     ft_lst_reverse(list);
@@ -28,6 +58,15 @@ void display_list(t_list **list, const t_flags *flags, bool is_files) {
   print_files(*list, flags, is_files);
 }
 
+/**
+ * @brief Print a file or directory name with color and quoting as needed.
+ * @param filename Name to print
+ * @param mode File mode
+ * @param is_executable Whether the file is executable
+ * @param no_colors Disable color output
+ * @param has_quote Whether to quote the name
+ * @param len Field width for printing
+ */
 void print_name(char *filename, mode_t mode, bool is_executable, bool no_colors, bool has_quote, size_t len) {
   char *name = filename;
   if (has_quote) {
@@ -45,6 +84,7 @@ void print_name(char *filename, mode_t mode, bool is_executable, bool no_colors,
     return;
   }
 
+  // Color logic for different file types
   if (S_ISDIR(mode)) {
     if ((mode & S_ISVTX) && (mode & S_IWOTH)) {
       ft_printf(BLACK_GREENBG "%-*s" RESET, len, name);
